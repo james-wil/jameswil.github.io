@@ -1,0 +1,26 @@
+---
+# https://docs.ansible.com/ansible/2.8/modules/win_feature_module.html#win-feature-module
+- hosts: test-server
+
+  tasks:
+  - name: Install IIS (Web-Server only)
+    win_feature:
+      name: Web-Server
+      state: present
+
+  - name: Install IIS (Web-Server and Web-Common-Http)
+    win_feature:
+      name:
+      - Web-Server
+      - Web-Common-Http
+      state: present
+  
+  - name: Ensure IIS service is running and set to start automatically
+    win_service:
+      name: W3SVC
+      state: started
+      start_mode: auto
+
+  - name: Reboot if installing Web-Server feature requires it
+    win_reboot:
+    when: win_feature.reboot_required
